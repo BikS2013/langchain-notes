@@ -28,9 +28,34 @@ class SheetDataProcessor:
             logger.warning(f"No data found in sheet: {sheet_name}")
             return pd.DataFrame()
             
-        # Get the first row as header
-        header = [str(col).strip() for col in values[0]]  # Convert to string and strip whitespace
-        data_rows = values[1:]
+        # Find first non-empty row to use as header
+        header_row_index = 0
+        for i, row in enumerate(values):
+            # Check if row has any non-empty values
+            if any(str(cell).strip() for cell in row):
+                header_row_index = i
+                if i > 0:
+                    logger.info(f"Skipped {i} empty rows at the start of sheet: {sheet_name}")
+                break
+        
+        # Get header from first non-empty row
+        header = [str(col).strip() for col in values[header_row_index]]
+        data_rows = values[header_row_index + 1:]
+        
+        # Remove empty rows from data
+        original_row_count = len(data_rows)
+        data_rows = [
+            row for row in data_rows
+            if any(str(cell).strip() for cell in row)
+        ]
+        removed_rows = original_row_count - len(data_rows)
+        
+        if removed_rows > 0:
+            logger.info(f"Removed {removed_rows} empty rows from data section in sheet: {sheet_name}")
+        
+        if not data_rows:
+            logger.warning(f"No data rows found in sheet: {sheet_name} after removing empty rows")
+            return pd.DataFrame()
         
         # Find the maximum number of columns
         data_cols = max(len(row) for row in data_rows) if data_rows else len(header)

@@ -27,9 +27,17 @@ class SheetProcessor:
         try:
             sheets = self.google_client.get_service()
             
-            # Get sheet metadata
+            # Get spreadsheet metadata
             metadata = sheets.get(spreadsheetId=self.config.spreadsheet_id).execute()
+            spreadsheet_title = metadata.get('properties', {}).get('title', '')
             sheet_names = [sheet['properties']['title'] for sheet in metadata['sheets']]
+            
+            # Save metadata separately
+            metadata = {
+                'spreadsheet_title': spreadsheet_title,
+                'spreadsheet_id': self.config.spreadsheet_id
+            }
+            self.file_manager.save_metadata(metadata)
             
             analyses = {}
             dataframes = {}

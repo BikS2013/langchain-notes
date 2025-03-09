@@ -34,6 +34,39 @@ class FileManager:
         # Create directories
         os.makedirs(self.output_dir, exist_ok=True)
         os.makedirs(self.analysis_dir, exist_ok=True)
+
+    def save_metadata(self, metadata: Dict[str, Any]) -> None:
+        """
+        Saves spreadsheet metadata to a JSON file.
+        
+        Args:
+            metadata (Dict[str, Any]): Metadata to save
+        """
+        metadata_path = os.path.join(self.output_dir, 'metadata.json')
+        try:
+            with open(metadata_path, 'w', encoding='utf-8') as f:
+                json.dump(metadata, f, indent=2, ensure_ascii=False)
+            logger.info(f"Saved spreadsheet metadata to {metadata_path}")
+        except Exception as e:
+            logger.error(f"Failed to save metadata: {str(e)}")
+
+    def load_metadata(self) -> Dict[str, Any]:
+        """
+        Loads spreadsheet metadata from JSON file.
+        
+        Returns:
+            Dict[str, Any]: The loaded metadata
+        """
+        metadata_path = os.path.join(self.output_dir, 'metadata.json')
+        try:
+            with open(metadata_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            logger.warning("No metadata file found")
+            return {}
+        except Exception as e:
+            logger.error(f"Failed to load metadata: {str(e)}")
+            return {}
     
     def export_to_csv(self, dataframes: Dict[str, pd.DataFrame], options: Dict[str, Any] = None) -> None:
         """

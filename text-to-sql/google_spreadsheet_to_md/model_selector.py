@@ -4,6 +4,7 @@ import os
 from typing import Optional, Any
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+from langchain_core.language_models import BaseChatModel
 from dotenv import load_dotenv
 from pydantic import SecretStr
 
@@ -58,7 +59,7 @@ def use_model(
     model_name: Optional[str] = None,
     temperature: Optional[float] = None,
     streaming: Optional[bool] = None
-) -> Any:
+) -> BaseChatModel:
     """
     Factory function to create a chat model instance based on the provider.
     

@@ -5,14 +5,12 @@ from dotenv import load_dotenv
 class Config:
     """Configuration management for the sheet processor."""
     
-    def __init__(self):
+    def __init__(self, spreadsheet_id: Optional[str] = None):
         # Load environment variables
         load_dotenv()
         
-        # Required settings
-        self.spreadsheet_id = self._get_required_env('SPREADSHEET_ID')
-        
         # Optional settings with defaults
+        self.spreadsheet_id = spreadsheet_id
         self.credentials_path = os.getenv('CREDENTIALS_PATH', 'credentials.json')
         self.output_dir = os.getenv('OUTPUT_DIR', 'output')
         self.analysis_dir = os.getenv('ANALYSIS_DIR', 'analysis')

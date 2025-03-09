@@ -5,12 +5,20 @@ from sheets.config import Config
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+def process_spreadsheet(spreadsheet_id: str, output_dir: str = 'output') -> dict:
+    """
+    Process Google Sheets data for a given spreadsheet.
 
-def main():
-    """Main function to process Google Sheets."""
+    Args:
+        spreadsheet_id: The ID of the Google Spreadsheet to process
+        output_dir: Directory where CSV files will be saved, defaults to 'output'
+    Returns:
+        dict: Analysis results for all sheets
+    """
     try:
         # Initialize processor with configuration
-        config = Config()
+        config = Config(spreadsheet_id=spreadsheet_id)
+        config.update(output_dir=output_dir)
         processor = SheetProcessor(config)
         
         # Process spreadsheet and get analyses
@@ -28,10 +36,8 @@ def main():
                 logger.info(f"  - {col}: {details['type']}")
         
         logger.info("\nProcess completed successfully!")
+        return analyses
         
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
         raise
-
-if __name__ == "__main__":
-    main()
